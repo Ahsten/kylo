@@ -22,17 +22,27 @@ const Editor = struct {
 
         try posix.tcsetattr(self.in.handle, std.posix.TCSA.FLUSH, raw_termios);
     }
+
+    fn disableRawMode(self: *Self) !void {
+        if (self.orig_termios) |termios| {
+            try posix.tcsetattr(self.in.handle, posix.TCSA.FLUSH, termios);
+        }
+    }
 };
 
 pub fn main() !void {
     var editor = Editor{
         .in = std.io.getStdIn(),
     };
-    _ = try editor.enableRawMode();
+
+    try editor.enableRawMode();
+
     var char: u8 = undefined;
     while (true) {
         char = try stdin.readByte();
         if (char == 'q') break;
         try stdout.print("{c}\n", .{char});
     }
+
+    try editor.disableRawMode();
 }

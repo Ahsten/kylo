@@ -19,6 +19,7 @@ const Editor = struct {
         }
 
         raw_termios.lflag.ECHO = false;
+        raw_termios.lflag.ICANON = false;
 
         try posix.tcsetattr(self.in.handle, std.posix.TCSA.FLUSH, raw_termios);
     }
